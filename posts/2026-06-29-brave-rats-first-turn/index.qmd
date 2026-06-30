@@ -14,18 +14,18 @@ format:
 
 # My Blog and Brave Rats
 
-To kick off my updated blog site, I'm re-visiting some data from my [Master's thesis](https://digitalcommons.calpoly.edu/theses/2810/) on the card game [Brave Rats](https://boardgamegeek.com/boardgame/112373/braverats).  If you're not familiar with the game (it's not too widely known), the simplest explanation is that it's a series of simultaneous-move card reveals, where the player with the highest card will win the round, but each card has a special ability that may change the outcome. First to four victories wins. For reference, the card abilities are as follows:
+To kick off my updated blog site, I'm re-visiting some data from my [Master's thesis](https://digitalcommons.calpoly.edu/theses/2810/) on the card game [Brave Rats](https://boardgamegeek.com/boardgame/112373/braverats). If you're not familiar with the game (it's not too widely known), the simplest explanation is that it's a series of simultaneous-move card reveals, where the player with the highest card will win the round, but each card has a special ability that may change the outcome. First to four victories wins. For reference, the card abilities are as follows:
 
-| Strength | Name       | Ability                                                        |
-| -------- | ---------- | -------------------------------------------------------------- |
-| 0        | Musician   | Round is a tie.                                                |
-| 1        | Princess   | Wins the full game if played against Prince (7).               |
-| 2        | Spy        | Next round, your opponent must show their card first.          |
-| 3        | Assassin   | The lower card wins this round.                                |
-| 4        | Ambassador | If you win with this card, you gain an additional round win.   |
-| 5        | Wizard     | Nullifies your opponent’s ability.                             |
-| 6        | General    | Next round, your card’s strength is increased by 2.            |
-| 7        | Prince     | You win the round (meaning that this card beats Assassin (3)). |
+| Strength | Name | Ability |
+|----|----|----|
+| 0 | Musician | Round is a tie. |
+| 1 | Princess | Wins the full game if played against Prince (7). |
+| 2 | Spy | Next round, your opponent must show their card first. |
+| 3 | Assassin | The lower card wins this round. |
+| 4 | Ambassador | If you win with this card, you gain an additional round win. |
+| 5 | Wizard | Nullifies your opponent’s ability. |
+| 6 | General | Next round, your card’s strength is increased by 2. |
+| 7 | Prince | You win the round (meaning that this card beats Assassin (3)). |
 
 For a complete explanation, I recommend reading the introduction of my [thesis](https://digitalcommons.calpoly.edu/theses/2810/) or watching this 2-minute video tutorial:
 
@@ -116,11 +116,11 @@ optimalProbs <- data.frame(P1Card = 0:7,
 
 In this article, I'll look at three main questions:
 
-1. How does my set of players play the first turn of Brave Rats?
+1.  How does my set of players play the first turn of Brave Rats?
 
-2. Have their strategies used with knowledge of the optimal MiniMax strategy?
+2.  Have their strategies used with knowledge of the optimal MiniMax strategy?
 
-3. Are there any weaknesses we can exploit with this knowledge?
+3.  Are there any weaknesses we can exploit with this knowledge?
 
 Using a dataset of `{r} nrow(fullSet)/2` recorded games and the MiniMax solution to the game, we'll see that human players have converged towards the MiniMax solution, but still show slight exploitable imperfections in their first-turn plays.
 
@@ -202,7 +202,7 @@ flatStartCards %>%
               ))
 ```
 
-For the most part, it looks like we've trended in the right direction. Spy (2) has gone from significantly over-played to just a few percentage points above the optimal rate. With Assassin (3) being played more often, the biggest remaining difference is that we've played Wizard (5) far less than the optimal rate - this has been intentional, due to the difficulty adjusting to playing the late game with the Wizard (5) already expended. 
+For the most part, it looks like we've trended in the right direction. Spy (2) has gone from significantly over-played to just a few percentage points above the optimal rate. With Assassin (3) being played more often, the biggest remaining difference is that we've played Wizard (5) far less than the optimal rate - this has been intentional, due to the difficulty adjusting to playing the late game with the Wizard (5) already expended.
 
 Even after MiniMax has been known, we still have a few instances of players (knowingly) choosing cards that would never be played under the optimal strategy. From one point of view, this may be simply blundering or messing around, but it's always entirely possible that an unexpected play will do even better against flawed human opponents.
 
@@ -309,7 +309,7 @@ perCardWinRatesExpectations %>%
 
 Before the MiniMax model, Wizard (5) appears to have been the most effective play, albeit a rare one, with Spy (2) being the most common one with a positive win rate. Note that Princess shows well, but with so little data that we see in its confidence interval we have a very unclear estimate of how much it would win in the long run. Unfortunately, due to the limited number of games recorded, you'll notice that every confidence interval in this chart spans the 50% line, so we technically can't even prove that any of these cards have a win rate different than 50%.
 
-After the release of the MiniMax model, Assassin (3) and Ambassador (4) have been the most effective out of the commonly played starter cards. General (6) has done surprisingly well, raising the possibility that it could be viable against flawed human opponents despite not being recommended by the optimal model. 
+After the release of the MiniMax model, Assassin (3) and Ambassador (4) have been the most effective out of the commonly played starter cards. General (6) has done surprisingly well, raising the possibility that it could be viable against flawed human opponents despite not being recommended by the optimal model.
 
 Spy (2) has surprisingly under-performed, with its confidence interval almost entirely below a 50% win rate, indicating we can almost confidently say that Spy (2) play has poor outcomes under current strategies. This suggests that our follow-up responses to Spy (2) have improved by observing the MiniMax model (such as the idea of throwing away Assassin (3)), but follow-ups from the Spy (2) player have failed to keep up.
 
@@ -354,11 +354,11 @@ optimalWinRates %>%
 
 This chart is the core of turn 1 gameplay, and is a lot of information, but can be simplified into these 3 bite sized pieces of info:
 
-1. The "Main 3" starters form a rock-paper-scissors trio: Spy (2) beats Assassin (3), Assassin (3) beats Ambassador (4), and Ambassador (4) beats Spy (2).
+1.  The "Main 3" starters form a rock-paper-scissors trio: Spy (2) beats Assassin (3), Assassin (3) beats Ambassador (4), and Ambassador (4) beats Spy (2).
 
-2. Wizard (5) is a solid choice as it gives a slight advantage against each of the "Main 3".
+2.  Wizard (5) is a solid choice as it gives a slight advantage against each of the "Main 3".
 
-3. Prince (7) is the best option to defeat Wizard (5) - even if you just play it 5% of the time, it'll stop your opponent from getting an advantage by playing Wizard (5) every game.
+3.  Prince (7) is the best option to defeat Wizard (5) - even if you just play it 5% of the time, it'll stop your opponent from getting an advantage by playing Wizard (5) every game.
 
 With this, we have the two ingredients to select a "best" card under any distribution - we know how likely they are to play each card, and how theoretically good or bad each card would be. With this, we can pretend the rest of the game doesn't happen, and just try to get the highest number on this payoff matrix. As an example, if I want to calculate how good it would be to play General (6) against someone who plays turn 1 according to the optimal distribution, I'd start by finding the odds I win against their Spy (2): 22% (odds they play Spy (2)) times 49.2% (Odds I win given that they play Spy (2)) = 10.8%. If I do that calculation for all 8 cards they might play and add them up, I get a total of 48% - so it's not ideal, but only a couple percent worse than others.
 
@@ -578,7 +578,7 @@ With the clear similarity of human post-turn-1 results to what MiniMax, and know
 
 ## Conclusion
 
-What surprised me most from this analysis was not that humans fail to play optimally, but that even trial and error got us so close to an optimal distribution. With the analysis only being able to produce a 4% lead off of the first turn against players who had no systematic knowledge of the game, it shows both the power of our intuition and reasoning which may extend to other similar games. 
+What surprised me most from this analysis was not that humans fail to play optimally, but that even trial and error got us so close to an optimal distribution. With the analysis only being able to produce a 4% lead off of the first turn against players who had no systematic knowledge of the game, it shows both the power of our intuition and reasoning which may extend to other similar games.
 
 As we've converged closer to MiniMax optimal play, we've narrowed the vulnerability to a 2% turn-1 advantage. This convergence demonstrates a fascinating ability to carry on the mind games of trying to predict your opponent's first move, while weighting the options according to a more complex distribution. Definitely don't take the 2% advantage of Ambassador (4) to mean you should play it all the time... or should you?
 
@@ -586,20 +586,18 @@ As we've converged closer to MiniMax optimal play, we've narrowed the vulnerabil
 
 A few notes on statistical assumptions that are broken
 
-1. `{r} scales::percent(fullSet %>% filter(Player1 == "William") %>% nrow() / nrow(fullSet),accuracy = 0.1)` of these plays are my own, so some trends may be more based on my own quirks than any larger meaning about people or the game. I didn't find enough interesting between-player trends to make it a topic worth exploring much in this article.
+1.  `{r} scales::percent(fullSet %>% filter(Player1 == "William") %>% nrow() / nrow(fullSet),accuracy = 0.1)` of these plays are my own, so some trends may be more based on my own quirks than any larger meaning about people or the game. I didn't find enough interesting between-player trends to make it a topic worth exploring much in this article.
 
-2. Apart from myself, this is certainly a convenience sample of my friends, so different groups would certainly get different results.
+2.  Apart from myself, this is certainly a convenience sample of my friends, so different groups would certainly get different results.
 
-3. Binomial (win rate) estimates and confidence intervals in this article are calculated using an [Adjusted Wald](https://measuringu.com/calculators/wald/) intervals. These help with some smaller sample sizes by mimicking a Beta(2,2) Bayesian estimation, biasing the estimates toward 50%.
+3.  Binomial (win rate) estimates and confidence intervals in this article are calculated using an [Adjusted Wald](https://measuringu.com/calculators/wald/) intervals. These help with some smaller sample sizes by mimicking a Beta(2,2) Bayesian estimation, biasing the estimates toward 50%.
 
-4. None of this gameplay is independent, so Binomial assumptions are surely broken anyway.
+4.  None of this gameplay is independent, so Binomial assumptions are surely broken anyway.
 
-5. Tied games have been excluded for simplicity. MiniMax "win rates" are technically "expected values" where a win is one point and a tie is half a point (Brave Rats ends in a tie if neither player achieves 4 victories by the end). By doing so, I've enabled good binomial math, but this leads our human results to be unlike the optimal model's - for the MiniMax model, a strategy that allows you to tie a losing game is very beneficial, whereas for the human data such a capability is just being ignored. In any case, it's only `{r} ratData %>% filter(P2Wins == 0.5) %>% nrow()` games of data, so shouldn't make too much difference.
+5.  Tied games have been excluded for simplicity. MiniMax "win rates" are technically "expected values" where a win is one point and a tie is half a point (Brave Rats ends in a tie if neither player achieves 4 victories by the end). By doing so, I've enabled good binomial math, but this leads our human results to be unlike the optimal model's - for the MiniMax model, a strategy that allows you to tie a losing game is very beneficial, whereas for the human data such a capability is just being ignored. In any case, it's only `{r} ratData %>% filter(P2Wins == 0.5) %>% nrow()` games of data, so shouldn't make too much difference.
 
-6. In plot #1 with the first-turn distributions, error bars based on a F statistic would likely be appropriate, though this plot may also just be understood as displaying existing data and not making any such hypothesis tests. This would also imply I should subsequently add error bars to the Theoretical Win Rates For Each Card vs. Different Starting Distributions plot, but I'm not aware of any methodology to do such a thing when the error bars would dependent on one another and any theoretical win rate would need the probabilities to add to 100%.
+6.  In plot #1 with the first-turn distributions, error bars based on a F statistic would likely be appropriate, though this plot may also just be understood as displaying existing data and not making any such hypothesis tests. This would also imply I should subsequently add error bars to the Theoretical Win Rates For Each Card vs. Different Starting Distributions plot, but I'm not aware of any methodology to do such a thing when the error bars would dependent on one another and any theoretical win rate would need the probabilities to add to 100%.
 
-7. This post is adapted from one I wrote in 2020, but pretty much a total re-write.
+7.  This post is adapted from one I wrote in 2020, but pretty much a total re-write.
 
-8. As the 2% advantage suggests, I hope this analysis doesn't give too much of an impression that I'll be winning overwhelmingly by exploiting outside analysis. Such methods may sometimes be frowned upon in the board game community for circumventing the fun of discovering tactics organically, so I avoid it in many cases. In my experience, though, Brave Rats has been even more cherished alongside deep analysis though, and it lends it to scrutiny well, while being quite difficult to implement the optimizations much beyond memorizing the first turn distribution. Perhaps my meager `{r} fullSet %>% filter(Player1 == "William") %>% pull(P1Wins) %>% mean() %>% scales::percent()` win rate (despite many games against people new to the game) can dissuade any such fears.
-
-
+8.  As the 2% advantage suggests, I hope this analysis doesn't give too much of an impression that I'll be winning overwhelmingly by exploiting outside analysis. Such methods may sometimes be frowned upon in the board game community for circumventing the fun of discovering tactics organically, so I avoid it in many cases. In my experience, though, Brave Rats has been even more cherished alongside deep analysis though, and it lends it to scrutiny well, while being quite difficult to implement the optimizations much beyond memorizing the first turn distribution. Perhaps my meager `{r} fullSet %>% filter(Player1 == "William") %>% pull(P1Wins) %>% mean() %>% scales::percent()` win rate (despite many games against people new to the game) can dissuade any such fears.
