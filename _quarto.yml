@@ -1,0 +1,23 @@
+project:
+  type: website
+
+website:
+  description: "A blog built with Quarto"
+  site-url: https://williammedwid.com # you must change this appropriately for RSS feeds to work properly
+  title: "Will's Stats Emporium"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/GenghisKhandybar
+      - icon: linkedin
+        href: https://www.linkedin.com/in/william-medwid-8a5814178/
+format:
+  html:
+    theme:
+      - lux
+      - brand
+    css: styles.css
+
+editor: visual
+

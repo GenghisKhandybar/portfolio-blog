@@ -1,0 +1,605 @@
+---
+title: 'Brave Rats: First Turn Analysis'
+author: William Medwid
+date: '2026-06-29'
+slug: brave-rats-first-turn-analysis
+categories: [analysis, r, boardgames]
+image: "featured.png"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    code-summary: "See code"
+---
+
+# My Blog and Brave Rats
+
+To kick off my updated blog site, I'm re-visiting some data from my [Master's thesis](https://digitalcommons.calpoly.edu/theses/2810/) on the card game [Brave Rats](https://boardgamegeek.com/boardgame/112373/braverats).  If you're not familiar with the game (it's not too widely known), the simplest explanation is that it's a series of simultaneous-move card reveals, where the player with the highest card will win the round, but each card has a special ability that may change the outcome. First to four victories wins. For reference, the card abilities are as follows:
+
+| Strength | Name       | Ability                                                        |
+| -------- | ---------- | -------------------------------------------------------------- |
+| 0        | Musician   | Round is a tie.                                                |
+| 1        | Princess   | Wins the full game if played against Prince (7).               |
+| 2        | Spy        | Next round, your opponent must show their card first.          |
+| 3        | Assassin   | The lower card wins this round.                                |
+| 4        | Ambassador | If you win with this card, you gain an additional round win.   |
+| 5        | Wizard     | Nullifies your opponent’s ability.                             |
+| 6        | General    | Next round, your card’s strength is increased by 2.            |
+| 7        | Prince     | You win the round (meaning that this card beats Assassin (3)). |
+
+For a complete explanation, I recommend reading the introduction of my [thesis](https://digitalcommons.calpoly.edu/theses/2810/) or watching this 2-minute video tutorial:
+
+{{< video https://www.youtube.com/watch?v=BfU4ccvL3kI >}}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+```{r imports, echo=FALSE}
+# Package Imports
+library(tidyverse)
+library(stringr)
+
+# Parameters
+optimalReleaseDate <- as.Date("2023-09-13", format = "%Y-%m-%d")
+conf_level = 0.9
+
+# Helper for card labels
+cardNames <- c("Musician", "Princess", "Spy", "Assassin", "Ambassador", "Wizard", "General", "Prince")
+
+get_card_name <- function(x) {cardNames[x + 1]}
+
+cardLabels <- data.frame(card = 0:7, 
+                         cardLabel = factor(paste0(get_card_name(as.numeric(0:7)), " (", 0:7, ")"),
+                                        levels = paste0(get_card_name(0:7), " (", 0:7, ")"))
+                         )
+
+
+# Data
+columnNames = c("Game #", "Date", "Player 1","Player 2", "Outcome", "P2 Wins?", "Notes", 
+                "P1 Card 1","P2 Card 1","P1 Card 2","P2 Card 2","P1 Card 3","P2 Card 3",
+                "P1 Card 4","P2 Card 4","P1 Card 5","P2 Card 5","P1 Card 6","P2 Card 6",
+                "P1 Card 7","P2 Card 7","P1 Card 8","P2 Card 8") %>% 
+  str_replace_all("[ #?]", "")
+
+ratData <- read_csv("Brave Rats Data - Record.csv", 
+                    skip_empty_rows = TRUE, 
+                    col_names = columnNames, 
+                    skip=1) %>% 
+  mutate(Date = as.Date(Date, format = '%m/%d/%Y'))
+
+# Mirror the data to get the perspective of P1 and P2
+notFlipped <- ratData %>% 
+  mutate(P1Wins = abs(P2Wins-1), 
+         P1Card = ratData$P1Card1, 
+         P2Card = ratData$P2Card1, 
+         flipped = FALSE) %>% 
+  select(Game, Date, Player1, P1Wins, P1Card, P2Card, flipped)
+
+flipped <- ratData %>% 
+  mutate(P1Wins = P2Wins, 
+         P1Card = ratData$P2Card1, 
+         P2Card = ratData$P1Card1, 
+         Player1 = Player2, #Flipping the players
+         Player2 = Player1,
+         flipped = TRUE) %>% 
+  select(Game, Date, Player1, P1Wins, P1Card, P2Card, flipped)
+
+# Defining single-number reference variables for inline
+firstOptimalGame <- ratData %>% filter(Date > optimalReleaseDate) %>% 
+  arrange(Game) %>% 
+  head(1) %>% 
+  pull(Game)
+
+# Defining main aggregated dataset
+fullSet <- rbind(notFlipped, flipped) %>% 
+  filter(P1Wins != 0.5) %>% 
+  mutate(Outcome = ifelse(  P1Wins==1, "Win", "Loss"),
+    Outcome = factor(Outcome, levels = c("Loss", "Win")),
+    optimalKnown = ifelse(Game >= firstOptimalGame, "Post-Optimal", "Pre-Optimal") ) %>% 
+  arrange(Game)
+
+# Reading data from Optimal Win R
+optimalWinRates <- read_csv("BraveRatsOptimalT1Table.csv") %>% 
+  pivot_longer(cols = c("0","1","2","3","4","5","6","7"), names_to = "P2Card", values_to = "OptimalWinP") %>% 
+  mutate(P2Card = as.numeric(P2Card)) %>% 
+  left_join(cardLabels, by = c("P1Card" = "card")) %>% 
+  left_join(cardLabels, by = c("P2Card" = "card"), suffix = c("P1", "P2"))
+
+optimalProbs <- data.frame(P1Card = 0:7, 
+                           source = "Optimal",
+                           n = NA,
+                           wins = NA,
+                           playRate = c(0, 0, 0.222, 0.272, 0.227, 0.234, 0, 0.045)
+)
+```
+
+In this article, I'll look at three main questions:
+
+1. How does my set of players play the first turn of Brave Rats?
+
+2. Have their strategies used with knowledge of the optimal MiniMax strategy?
+
+3. Are there any weaknesses we can exploit with this knowledge?
+
+Using a dataset of `{r} nrow(fullSet)/2` recorded games and the MiniMax solution to the game, we'll see that human players have converged towards the MiniMax solution, but still show slight exploitable imperfections in their first-turn plays.
+
+The MiniMax optimal solution I'm suggesting could be summarized as a perfectly unpredictable player - they perfectly mix up their choices so that no matter what you play, you'll never get more than a 50% chance to beat it.
+
+## Human Strategies Over Time
+
+Unlike in Chess, where one may find success repeating the same opening move every game, in Brave Rats, any such predictable choices will bring a quick defeat, as every card has a weakness. Thus, one must instead try to be unpredictable and select cards according to a distribution that will be hard to beat. As such, I'll be lumping many first-turn plays from different players together to create an aggregate understanding of how humans play. This means that instead of treating Brave Rats as a mind game about predicting your opponent, we'll study it in terms of distributions of cards played.
+
+So, we'll take a look at how often each card has been played. I'll make one distinction though: the plays from before I calculated and shared the MiniMax optimal strategy, and those after. Have we learned the ways of the machine?
+
+```{r}
+# PLOT 1: FIRST TURN PLAY RATES
+flatStartCards <- fullSet %>%
+  group_by(P1Card, optimalKnown) %>% 
+  summarize(
+    n = n(),
+    wins = sum(P1Wins == 1, na.rm = TRUE),
+  ) %>% 
+  group_by(optimalKnown) %>% 
+  mutate(playRate = n/sum(n)) %>%
+  ungroup() %>% 
+  rename(source = optimalKnown) %>% 
+  union(optimalProbs) %>% 
+  left_join(cardLabels, by = c("P1Card" = "card"))
+
+
+custom_theme <- theme_classic(base_size = 11) +
+  theme(
+    # Standard Element Removal/Adjustment
+    # Since this is not a facet plot, we generalize these removals
+    strip.background = element_blank(),
+    #strip.text = element_blank(),
+    # General clean-up
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    # Legend adjustments
+    legend.position = "top",
+    legend.direction = "horizontal",
+    # Adding a general box (if desired, use panel.border if this is the only panel)
+    panel.border = element_rect(
+        colour = "black",
+        fill = NA,
+        linewidth = 0.6
+    ),
+    # Title formatting
+    plot.title = element_text(face = "bold", size = 13, hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+
+flatStartCards %>% 
+  mutate(source = factor(source, levels = c("Pre-Optimal", "Post-Optimal", "Optimal")))%>% 
+  ggplot(aes(x = cardLabel, y = playRate, fill = source)) +
+  geom_col(position = "dodge", width = 0.85, color = "black", linewidth = 0.25) + # Use "dodge" to place bars side-by-side
+  geom_text(
+    aes(label = scales::percent(playRate, accuracy = 1)),
+    position = position_dodge(width = 0.85),
+    vjust = -0.25,
+    #hjust = -0.1,
+    size = 2.5
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(title = "Distributions of First-Turn Plays",
+       x = "Starting Card",
+       y = "Probability of Round 1 Play",
+       fill = NULL) +
+  custom_theme +
+  theme(    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()) +
+  scale_fill_manual(
+    values = c(
+      "Pre-Optimal" = "#6BAED6",
+      "Post-Optimal" = "#9467bd",
+      "Optimal" = "#D95F0E"
+    ),
+    labels = c("Pre-Optimal" = "Observed Before MiniMax",
+               "Post-Optimal" = "Observed After MiniMax",
+               "Optimal" = "MiniMax Optimal Strategy"
+              ))
+```
+
+For the most part, it looks like we've trended in the right direction. Spy (2) has gone from significantly over-played to just a few percentage points above the optimal rate. With Assassin (3) being played more often, the biggest remaining difference is that we've played Wizard (5) far less than the optimal rate - this has been intentional, due to the difficulty adjusting to playing the late game with the Wizard (5) already expended. 
+
+Even after MiniMax has been known, we still have a few instances of players (knowingly) choosing cards that would never be played under the optimal strategy. From one point of view, this may be simply blundering or messing around, but it's always entirely possible that an unexpected play will do even better against flawed human opponents.
+
+But we don't just want to know which cards are played the most, we want to know which ones will actually perform the best in practice. In the chart below, you'll see the observed win rates for each card.
+
+```{r}
+perCardWinRatesExpectations <- optimalWinRates %>% 
+  # Calculating expected chance of winning due to each card pairing by multiplying MiniMax of A vs B by the probability that opponent plays B
+  left_join(flatStartCards,# %>% filter(source != 'Optimal'), 
+            by= c("P2Card" = "P1Card"),
+            suffix = c("", "_flat")) %>%
+  # Add up those up for each of P1's cards
+  group_by(P1Card, cardLabelP1, source) %>% 
+  summarize(expectedWinRate = sum(OptimalWinP * playRate)) %>% 
+  # Joining to flatStartCards again by P1Card to get the actual winrates
+  left_join(flatStartCards, 
+          by= c("P1Card" = "P1Card", "source" = "source"),
+          suffix = c("", "_flat")) %>% 
+  mutate(winRate = wins / n,
+         adjustedWinRate = (wins+2) / (n+4)) %>% 
+  pivot_longer(cols = c(expectedWinRate, winRate), names_to = "expectedOrActual", values_to = "winRate") %>% 
+  mutate(expectedOrActual = ifelse(expectedOrActual == 'expectedWinRate', 'Expected', 'Observed')) %>% 
+  rowwise() %>% 
+  mutate(
+     conf_low = ifelse(is.na(n) | expectedOrActual == 'Expected', NA, binom.test(wins + 2, n + 4, conf.level = conf_level)$conf.int[1]), # ADJUSTED WALD CI
+     conf_high = ifelse(is.na(n) | expectedOrActual == 'Expected', NA, binom.test(wins + 2, n + 4, conf.level = conf_level)$conf.int[2])
+  )
+
+perCardWinRatesExpectations %>% 
+  filter(source != "Optimal", expectedOrActual == "Observed") %>% 
+  mutate(source = factor(source, levels = c("Pre-Optimal", "Post-Optimal", "Optimal"))) %>% 
+  
+  ggplot(aes(
+    x = cardLabelP1,
+    y = adjustedWinRate,
+    fill = source
+  )) +
+  
+  geom_hline(
+    yintercept = 0.5,
+    color = "red",
+    alpha = 0.5
+  ) +
+  
+  geom_col(
+    position = "dodge",
+    width = 0.85,
+    color = "black",
+    linewidth = 0.25
+  ) +
+  
+  geom_errorbar(
+    aes(ymin = conf_low, ymax = conf_high),
+    position = position_dodge(width = 0.85),
+    width = 0.3
+  ) +
+  
+  geom_label(
+    aes(
+      label = scales::percent(adjustedWinRate, accuracy = 1),
+      group = source
+    ),
+    position = position_dodge(width = 0.85),
+    vjust = -0.25,
+    size = 2.5,
+    fill = "white",
+    alpha = 0.8,
+    label.size = 0
+  ) +
+  
+  scale_y_continuous(
+    breaks = c(0, 0.25, 0.5, 0.75, 1),
+    labels = scales::percent,
+    expand = expansion(mult = c(0, 0.1))
+  ) +
+  
+  labs(
+    title = "Observed Win Rates For Each Card",
+    subtitle = "(Adjusted Wald estimates w/ 90% confidence intervals)",
+    x = "",
+    y = "",
+    fill = NULL
+  ) +
+  
+  custom_theme +
+  
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    plot.subtitle = element_text(hjust = 0.5, size = 7)
+  ) +
+  
+  scale_fill_manual(
+    values = c(
+      "Pre-Optimal" = "#6BAED6",
+      "Post-Optimal" = "#9467bd"
+    ),
+    labels = c(
+      "Pre-Optimal" = "Observed Before MiniMax",
+      "Post-Optimal" = "Observed After MiniMax"
+    )
+  )
+```
+
+Before the MiniMax model, Wizard (5) appears to have been the most effective play, albeit a rare one, with Spy (2) being the most common one with a positive win rate. Note that Princess shows well, but with so little data that we see in its confidence interval we have a very unclear estimate of how much it would win in the long run. Unfortunately, due to the limited number of games recorded, you'll notice that every confidence interval in this chart spans the 50% line, so we technically can't even prove that any of these cards have a win rate different than 50%.
+
+After the release of the MiniMax model, Assassin (3) and Ambassador (4) have been the most effective out of the commonly played starter cards. General (6) has done surprisingly well, raising the possibility that it could be viable against flawed human opponents despite not being recommended by the optimal model. 
+
+Spy (2) has surprisingly under-performed, with its confidence interval almost entirely below a 50% win rate, indicating we can almost confidently say that Spy (2) play has poor outcomes under current strategies. This suggests that our follow-up responses to Spy (2) have improved by observing the MiniMax model (such as the idea of throwing away Assassin (3)), but follow-ups from the Spy (2) player have failed to keep up.
+
+## Using Tactics from MiniMax to Exploit Human Imperfections
+
+We can go deeper than these uncertain estimates, though, and find true theoretical exploits to get the best win rates.
+
+To understand the overall space of decisions being made on turn 1, see these expected game from each turn-1 matchup. The best possible outcome is that you play Princess (1) and your opponent plays Prince (7), as the Princess's (1) ability reads "If your opponent plays the prince, you automatically win the game".
+
+```{r}
+optimalWinRates %>% 
+  ggplot(aes(x = cardLabelP1, y = cardLabelP2, fill = OptimalWinP)) +
+  geom_tile(color = "black", linewidth = 0.4) +
+  
+  geom_text(aes(label = sprintf("%.1f%%", OptimalWinP * 100)),
+            size = 3.5) +
+  scale_fill_gradient2(
+    low = "#6A3D9A",
+    mid = "white",
+    high = "#E68600",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  geom_abline(intercept = 0, slope=1, alpha = 0.25, color = "pink", size = 2) +
+  labs(
+    title = "Theoretical (MiniMax) Win Probabilities by First Turn Outcome",
+    x = "Your Card",
+    y = "Opponent's Card"
+  ) +
+  scale_x_discrete(expand = c(0, 0)) +
+  scale_y_discrete(expand = c(0, 0)) +
+  custom_theme +
+    theme(
+    axis.text.x = element_text(angle = 30, hjust = 1),
+    panel.grid = element_blank(),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    legend.position = "none",
+    #panel.border = element_blank(),
+    axis.line = element_blank()
+  )
+```
+
+This chart is the core of turn 1 gameplay, and is a lot of information, but can be simplified into these 3 bite sized pieces of info:
+
+1. The "Main 3" starters form a rock-paper-scissors trio: Spy (2) beats Assassin (3), Assassin (3) beats Ambassador (4), and Ambassador (4) beats Spy (2).
+
+2. Wizard (5) is a solid choice as it gives a slight advantage against each of the "Main 3".
+
+3. Prince (7) is the best option to defeat Wizard (5) - even if you just play it 5% of the time, it'll stop your opponent from getting an advantage by playing Wizard (5) every game.
+
+With this, we have the two ingredients to select a "best" card under any distribution - we know how likely they are to play each card, and how theoretically good or bad each card would be. With this, we can pretend the rest of the game doesn't happen, and just try to get the highest number on this payoff matrix. As an example, if I want to calculate how good it would be to play General (6) against someone who plays turn 1 according to the optimal distribution, I'd start by finding the odds I win against their Spy (2): 22% (odds they play Spy (2)) times 49.2% (Odds I win given that they play Spy (2)) = 10.8%. If I do that calculation for all 8 cards they might play and add them up, I get a total of 48% - so it's not ideal, but only a couple percent worse than others.
+
+If we calculate the expected win rates this way against the three distributions of turn-1 cards, we get this chart:
+
+```{r}
+perCardWinRatesExpectations %>% 
+  filter(expectedOrActual == "Expected") %>% 
+  mutate(source = factor(source, levels = c("Pre-Optimal", "Post-Optimal", "Optimal"))) %>% 
+  
+  ggplot(aes(
+    x = cardLabelP1,
+    y = winRate,
+    fill = source
+  )) +
+  geom_hline(
+    yintercept = 0.5,
+    color = "red",
+    alpha = 0.5
+  ) +
+  geom_col(
+    position = "dodge",
+    width = 0.85,
+    color = "black",
+    linewidth = 0.25
+  ) +
+  geom_text(
+    aes(
+      label = scales::percent(winRate, accuracy = 1),
+      group = source
+    ),
+    position = position_dodge(width = 0.85),
+    vjust = -0.25,
+    size = 2.5
+  ) +
+  scale_y_continuous(
+    breaks = c(0, 0.25, 0.5, 0.75, 1),
+    labels = scales::percent,
+    expand = expansion(mult = c(0, 0.1))
+  ) +
+  labs(
+    title = "Theoretical Win Rates For Each Card vs. Different Starting Distributions",
+    subtitle = "Assuming MiniMax optimal play after first turn",
+    x = "Your First Card",
+    y = "",
+    fill = NULL
+  ) +
+  custom_theme +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    plot.subtitle = element_text(hjust = 0.5, size = 9)
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Pre-Optimal" = "#6BAED6",
+      "Post-Optimal" = "#9467bd",
+      "Optimal" = "#D95F0E"
+    ),
+    labels = c(
+      "Pre-Optimal" = "Observed Turn 1 Distribution\nFrom Before MiniMax",
+      "Post-Optimal" = "Observed Turn 1 Distribution\nFrom After MiniMax",
+      "Optimal" = "MiniMax Optimal\nTurn 1 Distribution"
+    )
+  )
+```
+
+So, even though the observed human distributions deviated from what's optimal, we can see here that even the best card to exploit them (Ambassador (4)) would only get you to a theoretical 54% win rate against the pre-MiniMax players and 52% against post-MiniMax players. This gives hope that, at least for the first turn of the game, our plays have only been exploitable by a few percentage points - even before any knowledge of what was theoretically optimal to play.
+
+In order to demonstrate the usefulness of this great 2% advantage against current players, though, I must also demonstrate that the end-game outcomes from different turn-1 matchups actually do reflect the expected results. To do this, I've made a little plot comparing the actual win rates we've seen versus the win rates MiniMax expects to see:
+
+```{r}
+startAggregates <- fullSet %>% 
+  #filter(P1Card %in% c(2,3,4,5,7) & P2Card %in% c(2,3,4,5,7)) %>% 
+  
+  group_by(P1Card, P2Card, Outcome) %>%
+  summarize(n = n()) %>% 
+  pivot_wider(id_cols = c(P1Card, P2Card), names_from = Outcome, values_from = n, values_fill = 0) %>% 
+  mutate(n = Win + Loss,
+         conf_low =  binom.test(Win + 2, Win + Loss + 4, conf.level = conf_level)$conf.int[1], # ADJUSTED WALD CI
+         conf_high = binom.test(Win + 2, Win + Loss + 4, conf.level = conf_level)$conf.int[2],
+         phat = (Win + 2) / (Win + Loss + 4)
+         ) %>% 
+  ungroup() %>% 
+  full_join(optimalWinRates, by = c("P1Card", "P2Card")) %>% 
+  mutate(P2Card=factor(P2Card, levels=c("7", "6", "5", "4","3","2", "1", "0")))
+
+plotData <- startAggregates %>% 
+    filter(P1Card %in% c(2,3,4,5) & P2Card %in% c(2,3,4,5)) %>% 
+  #filter(n >= 4) %>%
+  pivot_longer(
+    cols = c(phat, OptimalWinP),
+    names_to = "Type",
+    values_to = "WinRate"
+  ) %>%
+  mutate(
+    Type = recode(
+      Type,
+      phat = "Observed",
+      OptimalWinP = "Optimal"
+    ),
+    label = paste0(
+      cardLabelP1, " vs. ",
+      cardLabelP2
+    ),
+    label_n = paste0("n = ", n, ""),
+    P2Card = factor(P2Card, levels = c("7","6","5","4","3", "2", "1", "0")) # reverse ordering of P2's cards
+  )
+
+ggplot(plotData,
+       aes(x = Type, y = WinRate, fill = Type)) +
+  # Main Bars
+  geom_col(width = 0.65, color = "black", linewidth = 0.25) +
+  # CI only for observed bars
+  geom_errorbar(
+    data = plotData %>% filter(Type == "Observed"),
+    aes(x = 0.9, ymin = conf_low, ymax = conf_high),
+    width = 0.2, size = 0.7
+  ) +
+  # CI upper label
+  geom_text(
+    data = plotData %>% filter(Type == "Observed"),
+    aes(x = 0.9, y = conf_high,
+      label = scales::percent(conf_high, accuracy = 1)
+    ),
+    hjust = 0.55, vjust = -0.3, size = 2.7
+  ) +
+  # CI lower label
+  geom_text(
+    data = plotData %>% filter(Type == "Observed"),
+    aes(x = 0.9, y = conf_low,
+      label = scales::percent(conf_low, accuracy = 1)
+    ),
+    hjust = 0.55,
+    vjust = 1.25,
+    size = 2.7
+  ) +
+    # labels on bars
+  geom_text(
+    aes(label = scales::percent(WinRate, accuracy = 1)),
+    vjust = -0.45,
+    hjust = -0.2,
+    size = 3
+  ) +
+  facet_grid(
+    P2Card ~ P1Card,
+    switch = "both"
+  ) +
+  #Top of subplot text
+  geom_text(
+    aes(
+      x = 1.5, y = 1.09,
+      label = label
+    ),
+    inherit.aes = FALSE,
+    size = 2.5,
+    fontface = "bold"
+  ) +
+  # n text
+  geom_text(
+    aes(
+      x = 1.5, y = 0.95,
+      label = label_n
+    ),
+    inherit.aes = FALSE,
+    size = 2.5
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0))) +
+  coord_cartesian(ylim = c(0, 1.18), clip = "off") +
+  labs(title = "Win Rates for Most Common First Turn Outcomes",
+       subtitle = "(Adjusted Wald estimates w/ 90% confidence intervals)",
+       fill = NULL) +
+  theme_classic(base_size = 11) +
+  theme(
+    # remove facet grid labels  
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    # remove axis titles
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    # remove axis text (optional for journal figures)
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    # remove axis text (optional for journal figures)
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    legend.direction = "horizontal",
+    # add box around each facet
+    panel.border = element_rect(
+        color = "black",
+        fill = NA,
+        linewidth = 0.6
+      ),
+      panel.spacing = unit(0.6, "lines"),
+    plot.title = element_text(face = "bold", size = 13, hjust =0.5),
+    plot.subtitle = element_text(hjust = 0.5, size = 7)
+        ) +
+  # Color palette (clean + print safe)
+  scale_fill_manual(
+    values = c(
+      "Observed" = "#6BAED6",
+      "Optimal" = "#D95F0E"
+    ),
+    labels = c(
+      "Observed" = "Observed Win Rate",
+      "Optimal" = "Theoretical MiniMax Win Rate"
+    ),
+  )
+```
+
+And it looks like each of these matches quite well! Between cards 2, 3 and 4, the human outcomes are within 2 percentage points of the optimal model's. With Wizard (5), we have tiny sample sizes so such proximity wouldn't be possible, but at least they're directionally correct as to which side has the advantage.
+
+With the clear similarity of human post-turn-1 results to what MiniMax, and knowledge of the optimal model, we can now say that Ambassador (4) seems to legitimately have a slight edge against current players' strategies - a 52% win rate if by the theory, or 60% win rate in the real games.
+
+## Conclusion
+
+What surprised me most from this analysis was not that humans fail to play optimally, but that even trial and error got us so close to an optimal distribution. With the analysis only being able to produce a 4% lead off of the first turn against players who had no systematic knowledge of the game, it shows both the power of our intuition and reasoning which may extend to other similar games. 
+
+As we've converged closer to MiniMax optimal play, we've narrowed the vulnerability to a 2% turn-1 advantage. This convergence demonstrates a fascinating ability to carry on the mind games of trying to predict your opponent's first move, while weighting the options according to a more complex distribution. Definitely don't take the 2% advantage of Ambassador (4) to mean you should play it all the time... or should you?
+
+### Disclaimers
+
+A few notes on statistical assumptions that are broken
+
+1. `{r} scales::percent(fullSet %>% filter(Player1 == "William") %>% nrow() / nrow(fullSet),accuracy = 0.1)` of these plays are my own, so some trends may be more based on my own quirks than any larger meaning about people or the game. I didn't find enough interesting between-player trends to make it a topic worth exploring much in this article.
+
+2. Apart from myself, this is certainly a convenience sample of my friends, so different groups would certainly get different results.
+
+3. Binomial (win rate) estimates and confidence intervals in this article are calculated using an [Adjusted Wald](https://measuringu.com/calculators/wald/) intervals. These help with some smaller sample sizes by mimicking a Beta(2,2) Bayesian estimation, biasing the estimates toward 50%.
+
+4. None of this gameplay is independent, so Binomial assumptions are surely broken anyway.
+
+5. Tied games have been excluded for simplicity. MiniMax "win rates" are technically "expected values" where a win is one point and a tie is half a point (Brave Rats ends in a tie if neither player achieves 4 victories by the end). By doing so, I've enabled good binomial math, but this leads our human results to be unlike the optimal model's - for the MiniMax model, a strategy that allows you to tie a losing game is very beneficial, whereas for the human data such a capability is just being ignored. In any case, it's only `{r} ratData %>% filter(P2Wins == 0.5) %>% nrow()` games of data, so shouldn't make too much difference.
+
+6. In plot #1 with the first-turn distributions, error bars based on a F statistic would likely be appropriate, though this plot may also just be understood as displaying existing data and not making any such hypothesis tests. This would also imply I should subsequently add error bars to the Theoretical Win Rates For Each Card vs. Different Starting Distributions plot, but I'm not aware of any methodology to do such a thing when the error bars would dependent on one another and any theoretical win rate would need the probabilities to add to 100%.
+
+7. This post is adapted from one I wrote in 2020, but pretty much a total re-write.
+
+8. As the 2% advantage suggests, I hope this analysis doesn't give too much of an impression that I'll be winning overwhelmingly by exploiting outside analysis. Such methods may sometimes be frowned upon in the board game community for circumventing the fun of discovering tactics organically, so I avoid it in many cases. In my experience, though, Brave Rats has been even more cherished alongside deep analysis though, and it lends it to scrutiny well, while being quite difficult to implement the optimizations much beyond memorizing the first turn distribution. Perhaps my meager `{r} fullSet %>% filter(Player1 == "William") %>% pull(P1Wins) %>% mean() %>% scales::percent()` win rate (despite many games against people new to the game) can dissuade any such fears.
+
+
