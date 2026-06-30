@@ -6,8 +6,10 @@ website:
   site-url: https://williammedwid.com # you must change this appropriately for RSS feeds to work properly
   title: "Will's Stats Emporium"
   navbar:
+    left:
+      - text: Posts
+        href: posts.qmd
     right:
-      - about.qmd
       - icon: github
         href: https://github.com/GenghisKhandybar
       - icon: linkedin

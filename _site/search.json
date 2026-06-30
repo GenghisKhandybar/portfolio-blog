@@ -14,18 +14,25 @@
     "text": "This is my most progressed board game design to date. Seating 2-4 players, the game challenges players to out-flank each other, with each type of army being vulnerable to one other type of army. At the start of each game, the players construct a new island with castles throughout.\nThe kingdom’s power has broken up over a harsh winter, breaking up the power into several factions vying for dominance. Now, Spring has come and the brawl for dominance begins. The goal of the game is to unite 4 castles into a contiguous region of your own armies, to unite the broken kingdom under your rule.\nEach turn is simple - in any order: 1. Place a unit from your hand 2. Attack an opponent’s unit, if you can 3. Recall a group of units\nThen, if your hand is empty, choose 3 cards to replenish it. This requires planning for the next few turns.\nTo attack a card, you must have a larger group of the card that beats the opponent’s card. Bows beat swords, swords beat shields, and shields beat bows. In the example below, yellow would be able to capture Red’s sword because it’s next to two of yellow’s bows. Similarly, blue would be able to capture either of green’s bow cards because it has the larger group of shields adjacent. \nThis weapons triangle makes for a constantly shifting landscape where your soldiers have very decisive victories and losses.\nThat’s pretty much the game! For the full rules or to play on Tabletop Simulator, follow the links at the top of the page. This game is still in development, so any feedback is appreciated."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "A reasonably professional blog",
+    "objectID": "posts.html",
+    "href": "posts.html",
+    "title": "Posts",
     "section": "",
     "text": "Boad Game Design: A Better Blade\n\n\n\nboardgames\n\n\n\n\n\n\n\n\n\nJun 29, 2026\n\n\nWilliam Medwid\n\n\n\n\n\n\n\n\n\n\n\n\nBrave Rats: First Turn Analysis\n\n\n\nanalysis\n\nr\n\nboardgames\n\n\n\n\n\n\n\n\n\nJun 29, 2026\n\n\nWilliam Medwid\n\n\n\n\n\n\n\n\n\n\n\n\nStudy 25-35 Hours a Week? The Life of a First-Year Statistics Major\n\n\n\nanalysis\n\nacademics\n\nr\n\n\n\n\n\n\n\n\n\nAug 26, 2020\n\n\nWilliam Medwid\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "William Medwid",
     "section": "",
-    "text": "About this blog"
+    "text": "I’m a young data engineering professional with a M.S. in Statistics from Cal Poly, San Luis Obispo.\nI’ve set up this site to showcase some data visualization, technical writing, and all sort of projects. I love to mix these skills with my personal interests, putting out needlessly in-depth analysis of niche subjects."
+  },
+  {
+    "objectID": "index.html#bio",
+    "href": "index.html#bio",
+    "title": "William Medwid",
+    "section": "",
+    "text": "I’m a young data engineering professional with a M.S. in Statistics from Cal Poly, San Luis Obispo.\nI’ve set up this site to showcase some data visualization, technical writing, and all sort of projects. I love to mix these skills with my personal interests, putting out needlessly in-depth analysis of niche subjects."
   },
   {
     "objectID": "posts/2026-06-29-brave-rats-first-turn/index.html",

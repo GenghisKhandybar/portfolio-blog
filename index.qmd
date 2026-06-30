@@ -1,14 +1,24 @@
 ---
-title: "A reasonably professional blog"
-listing:
-  contents: posts
-  feed: true
-  sort: "date desc"
-  type: default
-  categories: true
-  sort-ui: false
-  filter-ui: false
-page-layout: full
-title-block-banner: true
+title: "William Medwid"
+image: profile.jpg
+image-shape: round
+about:
+  template: trestles
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/william-medwid-8a5814178/
+    - icon: github
+      text: Github
+      href: https://github.com/GenghisKhandybar
 ---
 
+::: {.column-page}
+
+## Bio
+
+I'm a young data engineering professional with a M.S. in Statistics from Cal Poly, San Luis Obispo.
+
+I've set up this site to showcase some data visualization, technical writing, and all sort of projects. I love to mix these skills with my personal interests, putting out needlessly in-depth analysis of niche subjects.
+
+:::
