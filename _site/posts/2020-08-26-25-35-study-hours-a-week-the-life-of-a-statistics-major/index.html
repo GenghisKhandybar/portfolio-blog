@@ -244,13 +244,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Render Interactive Dataframe</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>widget <span class="ot">&lt;-</span> DT<span class="sc">::</span><span class="fu">datatable</span>(study_time <span class="sc">%&gt;%</span> <span class="fu">select</span>(Completed,Class,Assignment,Minutes) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">100</span>), <span class="at">rownames =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>widgetframe<span class="sc">::</span><span class="fu">frameWidget</span>(widget, <span class="at">width=</span><span class="st">'100%'</span>, <span class="at">height =</span> <span class="st">'100%'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>study_time <span class="sc">%&gt;%</span> </span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Completed,Class,Assignment,Minutes) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  DT<span class="sc">::</span><span class="fu">datatable</span>(<span class="at">rownames =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  widgetframe<span class="sc">::</span><span class="fu">frameWidget</span>(<span class="at">width=</span><span class="st">'100%'</span>, <span class="at">height =</span> <span class="st">'100%'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div id="htmlwidget-14b76557b135959aa305" style="width:100%;height:100%;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-14b76557b135959aa305">{"x":{"url":"index_files/figure-html//widgets/widget_data.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f75bad9c1848982cfbec" style="width:100%;height:100%;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f75bad9c1848982cfbec">{"x":{"url":"index_files/figure-html//widgets/widget_data.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>Next, we’ll aggregate these tasks and see how much work there was on a weekly basis. For this plot, each week is its own dot, with a smoothed trendline interpolating a moving average.</p>

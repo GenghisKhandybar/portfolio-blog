@@ -2788,33 +2788,37 @@ font-style: inherit;">"GameDevClub"</span>)</span>
 <span id="cb1-29"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Render Interactive Dataframe</span></span>
-<span id="cb1-30">widget <span class="ot" style="color: #003B4F;
+<span id="cb1-30">study_time <span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">&lt;-</span> DT<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">datatable</span>(study_time <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb1-31">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">select</span>(Completed,Class,Assignment,Minutes) <span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb1-32">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">head</span>(<span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">100</span>), <span class="at" style="color: #657422;
+font-style: inherit;">100</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">rownames =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span>
-<span id="cb1-31"></span>
-<span id="cb1-32">widgetframe<span class="sc" style="color: #5E5E5E;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb1-33">  DT<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">frameWidget</span>(widget, <span class="at" style="color: #657422;
+font-style: inherit;">datatable</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">rownames =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="cb1-34">  widgetframe<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">frameWidget</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">width=</span><span class="st" style="color: #20794D;
 background-color: null;
@@ -2825,8 +2829,8 @@ background-color: null;
 font-style: inherit;">'100%'</span>)</span></code></pre></div></div>
 </details>
 <div class="cell-output-display">
-<div id="htmlwidget-14b76557b135959aa305" style="width:100%;height:100%;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-14b76557b135959aa305">{"x":{"url":"index_files/figure-html//widgets/widget_data.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f75bad9c1848982cfbec" style="width:100%;height:100%;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f75bad9c1848982cfbec">{"x":{"url":"index_files/figure-html//widgets/widget_data.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>Next, we’ll aggregate these tasks and see how much work there was on a weekly basis. For this plot, each week is its own dot, with a smoothed trendline interpolating a moving average.</p>

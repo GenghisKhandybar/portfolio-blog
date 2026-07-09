@@ -57,9 +57,11 @@ study_time <- read.csv("collegeFirstYear.csv") %>%
 
 
 # Render Interactive Dataframe
-widget <- DT::datatable(study_time %>% select(Completed,Class,Assignment,Minutes) %>% head(100), rownames = FALSE)
-
-widgetframe::frameWidget(widget, width='100%', height = '100%')
+study_time %>% 
+  select(Completed,Class,Assignment,Minutes) %>% 
+  head(100) %>% 
+  DT::datatable(rownames = FALSE) %>% 
+  widgetframe::frameWidget(width='100%', height = '100%')
 ```
 
 Next, we'll aggregate these tasks and see how much work there was on a weekly basis. For this plot, each week is its own dot, with a smoothed trendline interpolating a moving average. 

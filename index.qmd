@@ -16,7 +16,7 @@ about:
       href: mailto:william.medwid@gmail.com
     - text: Resume
       icon: file-text
-      href: resumeWilliamMedwid.pdf
+      href: static/resumeWilliamMedwid.pdf
       target: _blank
 ---
 
