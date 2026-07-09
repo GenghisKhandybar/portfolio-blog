@@ -7,7 +7,7 @@ categories: [boardgames, projects]
 image: "featured.jpg"
 ---
 
-Sharing some progress on the board game I'm designing! This game has been almost 7 years in the making, with my first recorded iterations starting in 2019. In the [rules doc](https://docs.google.com/document/d/1LOGjD71TAOg6eka8LJ0YQiMUDCNQFQuq7egxFahBkS0/edit?tab=t.0 "Google Doc with rules to A Better Blade"). Alongside the rules, I've recorded the evolution of every change to the rules, and explanations for the intended effect of each.
+Sharing some progress on the board game I'm designing! This game has been almost 7 years in the making, with my first recorded iterations starting in 2019. In the [rules doc](https://docs.google.com/document/d/1LOGjD71TAOg6eka8LJ0YQiMUDCNQFQuq7egxFahBkS0/edit?tab=t.0 "Google Doc with rules to A Better Blade"). Alongside the rules, I've recorded the evolution of every change to the rules, and explanations for the intended effect of each - 48 unique days of updates so far, each of which containing several meaningful changes to the game.
 
 The result of all this iteration is, in my opinion, a clever tactical game in which 2 to 4 players will continually outmatch the others by deploying armies that exploit the others' weaknesses. Each player is trying to conquer four out of the many castles on the board, and do everything it takes to stop the others from doing the same.
 
