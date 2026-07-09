@@ -11,14 +11,23 @@ about:
     - icon: github
       text: Github
       href: https://github.com/GenghisKhandybar
+    - text: Email
+      icon: envelope
+      href: mailto:william.medwid@gmail.com
+    - text: Resume
+      icon: file-text
+      href: resumeWilliamMedwid.pdf
+      target: _blank
 ---
 
 ::: column-page
 ## Bio
 
-I'm William, a data engineer with an M.S. in Statistics from Cal Poly, and 4 years experience in the field. Between my work at Meta, Amazon, and Applied Orthopedic Design, I've helped many professional teams make high-stakes decisions in an informed, data-based manner.
+I'm William, a data engineer with an M.S. in Statistics from Cal Poly, and 4 years experience in the field. Between my work at Meta, Amazon, and Applied Orthopedic Design, I've helped many professional teams collect data, process it, validate it, and access it with self-serve dashboards to make high-stakes decisions. My favorite parts of the job are achieving a mutual understanding of goals with the subject matter experts, and then walking them through the resulting data products I've made.
 
 I love collecting data and making it into beautiful plots and insights. I've set up this site to showcase those data analyses, as well as some technical writing and other projects. I aim to raise the bar on plots, with clear consistent styling, data labels that don't force you to turn your head, and more.
 
 In each post, you'll find the code folded so that you can easily see the techniques to process the data in R and make plots (usually with GGplot) - the site's source code is also available to see on [GitHub](https://github.com/GenghisKhandybar/portfolio-blog/tree/main/posts).
+
+While you're here, check out my [posts](posts.html)!
 :::
