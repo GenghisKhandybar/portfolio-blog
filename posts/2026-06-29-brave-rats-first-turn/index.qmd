@@ -8,24 +8,36 @@ image: "featured.png"
 format:
   html:
     code-fold: true
-    code-tools: true
     code-summary: "See code"
 ---
 
-# My Blog and Brave Rats
+::: {layout-ncol=2}
+
+# Background
 
 To kick off my updated blog site, I'm re-visiting some data from my [Master's thesis](https://digitalcommons.calpoly.edu/theses/2810/) on the card game [Brave Rats](https://boardgamegeek.com/boardgame/112373/braverats). If you're not familiar with the game (it's not too widely known), the simplest explanation is that it's a series of simultaneous-move card reveals, where the player with the highest card will win the round, but each card has a special ability that may change the outcome. First to four victories wins. For reference, the card abilities are as follows:
 
-| Strength | Name | Ability |
-|----|----|----|
-| 0 | Musician | Round is a tie. |
-| 1 | Princess | Wins the full game if played against Prince (7). |
-| 2 | Spy | Next round, your opponent must show their card first. |
-| 3 | Assassin | The lower card wins this round. |
-| 4 | Ambassador | If you win with this card, you gain an additional round win. |
-| 5 | Wizard | Nullifies your opponent’s ability. |
-| 6 | General | Next round, your card’s strength is increased by 2. |
-| 7 | Prince | You win the round (meaning that this card beats Assassin (3)). |
+
+![](featured.png){width="300"}
+
+:::
+
+#### Table 1: Brave Rats Card Abilities
+
+<div style="font-size: 0.85em; line-height: 1.15; max-width: 800px;">
+
+| Strength | Name       | Ability                                                        |
+| -------- | ---------- | -------------------------------------------------------------- |
+| 0        | Musician   | Round is a tie.                                                |
+| 1        | Princess   | Wins the full game if played against Prince (7).               |
+| 2        | Spy        | Next round, your opponent must show their card first.          |
+| 3        | Assassin   | The lower card wins this round.                                |
+| 4        | Ambassador | If you win with this card, you gain an additional round win.   |
+| 5        | Wizard     | Nullifies your opponent's ability.                             |
+| 6        | General    | Next round, your card's strength is increased by 2.            |
+| 7        | Prince     | You win the round (meaning that this card beats Assassin (3)). |
+
+</div>
 
 For a complete explanation, I recommend reading the introduction of my [thesis](https://digitalcommons.calpoly.edu/theses/2810/) or watching this 2-minute video tutorial:
 

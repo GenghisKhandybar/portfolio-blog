@@ -49,14 +49,25 @@
 
 
 
-<section id="my-blog-and-brave-rats" class="level1">
-<h1>My Blog and Brave Rats</h1>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<section id="background" class="level1 quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<h1>Background</h1>
 <p>To kick off my updated blog site, I’m re-visiting some data from my <a href="https://digitalcommons.calpoly.edu/theses/2810/">Master’s thesis</a> on the card game <a href="https://boardgamegeek.com/boardgame/112373/braverats">Brave Rats</a>. If you’re not familiar with the game (it’s not too widely known), the simplest explanation is that it’s a series of simultaneous-move card reveals, where the player with the highest card will win the round, but each card has a special ability that may change the outcome. First to four victories wins. For reference, the card abilities are as follows:</p>
+</section>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="https://williammedwid.com/posts/2026-06-29-brave-rats-first-turn/featured.png" class="img-fluid" width="300"></p>
+</div>
+</div>
+</div>
+<section id="table-1-brave-rats-card-abilities" class="level4">
+<h4 class="anchored" data-anchor-id="table-1-brave-rats-card-abilities">Table 1: Brave Rats Card Abilities</h4>
+<div style="font-size: 0.85em; line-height: 1.15; max-width: 800px;">
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 77%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -108,6 +119,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>For a complete explanation, I recommend reading the introduction of my <a href="https://digitalcommons.calpoly.edu/theses/2810/">thesis</a> or watching this 2-minute video tutorial:</p>
 <div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/BfU4ccvL3kI" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
 <p>In this article, I’ll look at three main questions:</p>
@@ -118,6 +130,7 @@
 </ol>
 <p>Using a dataset of 154 recorded games and the MiniMax solution to the game, we’ll see that human players have converged towards the MiniMax solution, but still show slight exploitable imperfections in their first-turn plays.</p>
 <p>The MiniMax optimal solution I’m suggesting could be summarized as a perfectly unpredictable player - they perfectly mix up their choices so that no matter what you play, you’ll never get more than a 50% chance to beat it.</p>
+</section>
 <section id="human-strategies-over-time" class="level2">
 <h2 class="anchored" data-anchor-id="human-strategies-over-time">Human Strategies Over Time</h2>
 <p>Unlike in Chess, where one may find success repeating the same opening move every game, in Brave Rats, any such predictable choices will bring a quick defeat, as every card has a weakness. Thus, one must instead try to be unpredictable and select cards according to a distribution that will be hard to beat. As such, I’ll be lumping many first-turn plays from different players together to create an aggregate understanding of how humans play. This means that instead of treating Brave Rats as a mind game about predicting your opponent, we’ll study it in terms of distributions of cards played.</p>
@@ -2566,9 +2579,6 @@ font-style: inherit;">"Theoretical MiniMax Win Rate"</span></span>
 </ol>
 
 
-<!-- -->
-
-</section>
 </section>
 </section>
 
@@ -2590,10 +2600,21 @@ font-style: inherit;">"Theoretical MiniMax Win Rate"</span></span>
 
 
 
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <p>Not all college slogans are the real inspirational type. Cal Poly happens to have a funnily direct one: Study 25-35 hours per week. At first while touring the school, it seems to be everywhere from posters on the wall to pins and magnets given out at orientation. 2 hours per week per unit, outside lecture, sounds like it’d add up to a whole lot. So, I’ve got to ask, does it match up with what students actually do?</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="https://williammedwid.com/posts/2020-08-26-25-35-study-hours-a-week-the-life-of-a-statistics-major/image.png" class="img-fluid" width="594"></p>
+</div>
+</div>
+</div>
 <p>As a bit of a spreadsheet nerd, I’ve found myself in a great position to dive into this question and see if I’ve lived up to the slogan myself. Ever since my second year of high school, consistently recording my time spent on academics in a spreadsheet has been an integral part of my work flow. Each assignment is added as a new row once it’s assigned, and I’ll do my best to describe it and estimate how long it’ll take to complete. This makes a dynamic to-do list where I can punch in and out, recording the time in helper columns. Once the assignment is done and I’ve recorded every minute spent on it, it’s filtered out of sight, clearing the list.</p>
 <p>Now, let’s take a look at the most important parts of raw data, as that’s often the best way to understand what we’re working with. This includes every assignment and class over my first year of college. Feel free to explore the data with the interactive table below.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>See code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Libraries </span></span>
@@ -2763,7 +2784,11 @@ font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"GameDevClub"</span>)</span>
 <span id="cb1-27"></span>
-<span id="cb1-28">widget <span class="ot" style="color: #003B4F;
+<span id="cb1-28"></span>
+<span id="cb1-29"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Render Interactive Dataframe</span></span>
+<span id="cb1-30">widget <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> DT<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -2773,12 +2798,19 @@ font-style: inherit;">datatable</span>(study_time <span class="sc" style="color:
 background-color: null;
 font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">select</span>(Completed,Class,Assignment,Minutes), <span class="at" style="color: #657422;
+font-style: inherit;">select</span>(Completed,Class,Assignment,Minutes) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>), <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">rownames =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">FALSE</span>)</span>
-<span id="cb1-29">widgetframe<span class="sc" style="color: #5E5E5E;
+<span id="cb1-31"></span>
+<span id="cb1-32">widgetframe<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2791,13 +2823,16 @@ background-color: null;
 font-style: inherit;">height =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'100%'</span>)</span></code></pre></div></div>
+</details>
 <div class="cell-output-display">
-<div id="htmlwidget-db55b888cb47b98f8e06" style="width:100%;height:100%;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-db55b888cb47b98f8e06">{"x":{"url":"index_files/figure-html//widgets/widget_data.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-14b76557b135959aa305" style="width:100%;height:100%;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-14b76557b135959aa305">{"x":{"url":"index_files/figure-html//widgets/widget_data.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
-<p>Next, we’ll aggregate these tasks and see how much work there was on a weekly basis.</p>
+<p>Next, we’ll aggregate these tasks and see how much work there was on a weekly basis. For this plot, each week is its own dot, with a smoothed trendline interpolating a moving average.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>See code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">workloads <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> study_time <span class="sc" style="color: #5E5E5E;
@@ -2898,6 +2933,7 @@ background-color: null;
 font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Academic workload over time (including lectures)"</span>)</span></code></pre></div></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -2907,6 +2943,8 @@ font-style: inherit;">"Academic workload over time (including lectures)"</span>)
 </div>
 </div>
 <div class="cell">
+<details class="code-fold">
+<summary>See code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#Mean is the statistic of choice because large projects can take a long time and end up with work from one week being counted in another.</span></span>
@@ -2993,9 +3031,12 @@ background-color: null;
 font-style: inherit;">digits=</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>)</span></code></pre></div></div>
+</details>
 </div>
 <p>Alas, I’ve only spent a mean of 19.7 hours per week, a good ways from 25, let alone 35. And that’s with classes included, which are 29% of that time. Apart from the intensive 4-week 8-unit 2019 summer session, there’s very little case to be made that I ended up having a typical 25-35 hour week, other than to consider the time spent traveling between classes, which, though quite time consuming, which is not included in my data, but could hardly be called studying.</p>
 <div class="cell">
+<details class="code-fold">
+<summary>See code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">conf_interval_per_unit <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
@@ -3013,10 +3054,13 @@ background-color: null;
 font-style: inherit;">alternative =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"less"</span>)</span></code></pre></div></div>
+</details>
 </div>
 <p>Another more charitable way to reconcile my schedule with the ideal would be to look at the per-unit time spent. It turns out that’s a more positive 1.7 hours, or the equivalent of 27.7 hours for a 16-unit schedule. This is still including classes but feels almost like victory nonetheless.</p>
 <p>Next, let’s see which classes were the ones that never required super rigorous homework?</p>
 <div class="cell">
+<details class="code-fold">
+<summary>See code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">workloads_by_class <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> study_time <span class="sc" style="color: #5E5E5E;
@@ -3181,6 +3225,7 @@ background-color: null;
 font-style: inherit;">10</span>,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">15</span>))</span></code></pre></div></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -3190,7 +3235,7 @@ font-style: inherit;">15</span>))</span></code></pre></div></div>
 </div>
 </div>
 <p>The chart shows only three classes below the two hour line, which match my memories of the less rigorous yet still valuable courses. Note that of the outlier groups may be exaggerated because a project done slowly over many days only counts on the week when it’s completed, unless I’ve broken the project into multiple component tasks.</p>
-<p>So, does Cal Poly require a full 25-35 hours a week of homework? Not for me at least. But I suppose the slogan “study 10-20 hours a week, whatever you’re feeling” would be far less inspiring. Also, I’m fairly certain architecture majors exceed 35 hours by at least a factor of two anyway.</p>
+<p>So, does Cal Poly require a full 25-35 hours a week of homework? In my first year I haven’t needed quite so much - just 19.7 hours per week outside of class, but it’s still felt rigorous and very effective in teaching a lot. Longer hours may be coming in the following years.</p>
 
 
 
